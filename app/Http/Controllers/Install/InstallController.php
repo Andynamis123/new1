@@ -30,16 +30,10 @@ class InstallController extends Controller {
         $database        = $request->database;
         $username        = $request->username;
         $password        = $request->password;
-        $license_key     = $request->license_key;
-        $envato_username = $request->envato_username;
 
-        $license_check = Installer::checkLicenseKey($license_key, $envato_username);
-        if ($license_check['result'] == true) {
-            if (Installer::createDbTables($host, $database, $username, $password) == false) {
-                return redirect()->back()->with("error", "Invalid Database Settings !")->withInput();
-            }
-        } else {
-            return redirect()->back()->with("error", $license_check['message'])->withInput();
+        // Create database tables and seed data
+        if (Installer::createDbTables($host, $database, $username, $password) == false) {
+            return redirect()->back()->with("error", "Invalid Database Settings !")->withInput();
         }
 
         return redirect('install/create_user');
