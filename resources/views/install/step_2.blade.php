@@ -1,30 +1,64 @@
-<form>
-  <label for="hostname">Database Hostname:</label>
-  <input type="text" id="hostname" name="hostname" required>
+@extends('install.layout')
 
-  <label for="database_name">Database Name:</label>
-  <input type="text" id="database_name" name="database_name" required>
+@section('content')
 
-  <label for="username">Database Username:</label>
-  <input type="text" id="username" name="username" required>
+<div class="card">
+	<div class="card-header bg-dark text-white text-center">Database Settings</div>
+	<div class="card-body">
+	   <div class="col-md-12">
+			@if (\Session::has('error'))
+			  <div class="alert alert-danger">
+				<span>{{ \Session::get('error') }}</span>
+			  </div>
+			@endif
+			<form action="{{ url('install/process_install') }}" method="post" autocomplete="off">
+			   {{ csrf_field() }}
+			  <div class="form-group">
+				<label>Hostname:</label>
+				<input type="text" class="form-control" value="localhost" name="hostname" id="hostname">
+			  </div>
 
-  <label for="password">Database Password:</label>
-  <input type="password" id="password" name="password">
+			  <div class="form-group">
+				<label>Database:</label>
+				<input type="text" class="form-control" name="database" id="database">
+			  </div>
 
-  <button type="button" id="next" disabled>Next</button>
-</form>
+			  <div class="form-group">
+				<label>Username:</label>
+				<input type="text" class="form-control" name="username" id="username">
+			  </div>
 
+			  <div class="form-group">
+				<label>Password:</label>
+				<input type="password" class="form-control" name="password" id="password">
+			  </div>
+
+			  <button type="submit" id="next-button" class="btn btn-install">Next</button>
+			</form>
+		    </div>
+		</div>
+	</div>
+@endsection
+
+@section('js-script')
 <script>
-  const updateButtonState = () => {
-    const hostname = document.getElementById('hostname').value;
-    const databaseName = document.getElementById('database_name').value;
-    const username = document.getElementById('username').value;
-    const nextButton = document.getElementById('next');
+(function ($) {
+   "use strict";
 
-    nextButton.disabled = !(hostname && databaseName && username);
-  };
+	$('#next-button').attr('disabled', true);
 
-  document.getElementById('hostname').addEventListener('input', updateButtonState);
-  document.getElementById('database_name').addEventListener('input', updateButtonState);
-  document.getElementById('username').addEventListener('input', updateButtonState);
+	$(document).on('keyup change', '#hostname, #username, #database, #password', function() {
+		var hostname = $('#hostname').val();
+		var database = $('#database').val();
+		var username = $('#username').val();
+		var password = $('#password').val();
+
+		if (hostname !== '' && username !== '' && database !== '') {
+			$('#next-button').attr('disabled', false);
+		} else {
+			$('#next-button').attr('disabled', true);
+		}
+	});
+})(jQuery);
 </script>
+@endsection
